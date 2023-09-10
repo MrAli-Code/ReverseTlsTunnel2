@@ -93,7 +93,7 @@ uninstall() {
 }
 
 #ip
-myip=$(ifconfig | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | awk '{ if($2 != "127.0.0.1") print $2 }')
+myip=$(hostname -I | awk '{print $1}')
 
 # Main menu
 clear

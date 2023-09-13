@@ -99,8 +99,8 @@ version=$(./RTT -v 2>&1 | grep -o 'version="[0-9]*"')
 # Main menu
 clear
 echo "By --> Peyman * Github.com/Ptechgithub * "
-echo "Your IP is: ($myip) "
 echo "$version"
+echo "Your IP is: ($myip) "
 echo ""
 echo " --------#- Reverse Tls Tunnel -#--------"
 echo "1) Install"

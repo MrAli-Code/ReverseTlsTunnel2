@@ -94,7 +94,7 @@ uninstall() {
 
 #ip & version
 myip=$(hostname -I | awk '{print $1}')
-version=$(./RTT -v 2>&1 | grep -o 'version="[0-9]*"')
+version=$(./RTT -v 2>&1 | grep -o 'version="[0-9.]*"')
 
 # Main menu
 clear

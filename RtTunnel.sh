@@ -98,7 +98,7 @@ check_update() {
     
 
     # Fetch the latest version from GitHub releases
-    latest_version=$(curl -s https://api.github.com/repos/radkesvat/ReverseTlsTunnel/releases/latest | grep -o '"tag_name": "V[^"]*"' | cut -d":" -f2)
+    latest_version=$(curl -s https://api.github.com/repos/radkesvat/ReverseTlsTunnel/releases/latest | grep -o '"tag_name": "[^"]*"' | cut -d":" -f2 | sed 's/["V ]//g' | sed 's/^/"/;s/$/"/')
 
     # Compare the installed version with the latest version
     if [ "$installed_version" == "$latest_version" ]; then

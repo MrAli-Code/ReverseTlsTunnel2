@@ -102,7 +102,7 @@ check_update() {
 
     # Compare the installed version with the latest version
     if [ "$installed_version" == "$latest_version" ]; then
-        echo "You are using the latest version of RTT ($installed_version)."
+        echo "You are using the latest version ($installed_version)."
     else
         echo "A new version is available: $latest_version (Installed: $installed_version)."
     fi

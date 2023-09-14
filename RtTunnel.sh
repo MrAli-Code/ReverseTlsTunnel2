@@ -121,6 +121,7 @@ echo ""
 echo " --------#- Reverse Tls Tunnel -#--------"
 echo "1) Install"
 echo "2) Uninstall"
+echo "3) Check Update"
 echo "0) Exit"
 echo " --------------$version---------------"
 read -p "Please choose: " choice

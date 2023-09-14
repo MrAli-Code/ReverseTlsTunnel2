@@ -102,9 +102,9 @@ check_update() {
 
     # Compare the installed version with the latest version
     if [[ "$latest_version" > "$installed_version" ]]; then
-        echo "You Installed latest version ($installed_version)"
+        echo "A new version is available, please reinstall: $latest_version (Installed: $installed_version)."
     else
-        echo "A new version is available , Please reinstall: $latest_version (Installed: $installed_version)."
+        echo "You have the latest version ($installed_version)."
     fi
 }
 

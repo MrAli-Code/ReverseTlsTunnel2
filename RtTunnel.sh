@@ -92,6 +92,22 @@ uninstall() {
     echo "Uninstallation completed successfully."
 }
 
+# Function to check for updates
+check_update() {
+    # Get the current installed version of RTT
+    installed_version=$(./RTT -v 2>&1 | grep -o 'version="[0-9.]*"')
+
+    # Fetch the latest version from GitHub releases
+    latest_version=$(curl -s https://api.github.com/repos/radkesvat/ReverseTlsTunnel/releases/latest | grep '"tag_name":' | sed -E 's/.*"v([^"]+)".*/\1/')
+
+    # Compare the installed version with the latest version
+    if [ "$installed_version" == "$latest_version" ]; then
+        echo "You are using the latest version of RTT ($installed_version)."
+    else
+        echo "A new version of RTT is available: $latest_version (Installed: $installed_version)."
+    fi
+}
+
 #ip & version
 myip=$(hostname -I | awk '{print $1}')
 version=$(./RTT -v 2>&1 | grep -o 'version="[0-9.]*"')
@@ -114,6 +130,8 @@ case $choice in
         ;;
     2)
         uninstall
+        ;;
+    3) check_update
         ;;
     0)
         exit

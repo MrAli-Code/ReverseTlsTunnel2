@@ -101,7 +101,7 @@ check_update() {
     latest_version=$(curl -s https://api.github.com/repos/radkesvat/ReverseTlsTunnel/releases/latest | grep -o '"tag_name": "[^"]*"' | cut -d":" -f2 | sed 's/["V ]//g' | sed 's/^/"/;s/$/"/')
 
     # Compare the installed version with the latest version
-    if [ "$installed_version" == "$latest_version" ]; then
+    if [[ "$latest_version" > "$installed_version" ]]; then
         echo "You Installed latest version ($installed_version)"
     else
         echo "A new version is available , Please reinstall: $latest_version (Installed: $installed_version)."

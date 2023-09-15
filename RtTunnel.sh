@@ -92,7 +92,7 @@ configure_arguments2() {
         if [ "$is_main_server" == "yes" ]; then
             arguments="--kharej --iran-ip:$server_ip --iran-port:443 --toip:127.0.0.1 --toport:multiport --password:$password --sni:$sni --terminate:24"
         elif [ "$is_main_server" == "no" ]; then
-            read -p "Enter your main IP:  " main_ip
+            read -p "Enter your main IP (VPN Server):  " main_ip
             arguments="--kharej --iran-ip:$server_ip --iran-port:443 --toip:$main_ip --toport:multiport --password:$password --sni:$sni --terminate:24"
         else
             echo "Invalid choice for main server. Please enter 'yes' or 'no'."

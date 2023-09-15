@@ -71,6 +71,105 @@ EOL
     sudo systemctl enable tunnel.service
 }
 
+check_lbinstalled() {
+    if [ -f "/etc/systemd/system/lbtunnel.service" ]; then
+        echo "The Load-balancer is already installed."
+        exit 1
+    fi
+}
+
+# Function to configure arguments2 based on user's choice
+configure_arguments2() {
+    read -p "Which server do you want to use? (Enter '1' for Iran or '2' for Kharej) : " server_choice
+    read -p "Please Enter SNI (default : splus.ir): " sni
+    sni=${sni:-splus.ir}
+
+    if [ "$server_choice" == "2" ]; then
+        read -p "Is this your main server (VPN server)? (yes/no): " is_main_server
+        read -p "Please Enter (IRAN IP) : " server_ip
+        read -p "Please Enter Password (Please choose the same password on both servers): " password
+
+        if [ "$is_main_server" == "yes" ]; then
+            arguments="--kharej --iran-ip:$server_ip --iran-port:443 --toip:127.0.0.1 --toport:multiport --password:$password --sni:$sni --terminate:24"
+        elif [ "$is_main_server" == "no" ]; then
+            read -p "Enter your main IP:  " main_ip
+            arguments="--kharej --iran-ip:$server_ip --iran-port:443 --toip:$main_ip --toport:multiport --password:$password --sni:$sni --terminate:24"
+        else
+            echo "Invalid choice for main server. Please enter 'yes' or 'no'."
+            exit 1
+        fi
+
+    elif [ "$server_choice" == "1" ]; then
+        read -p "Please Enter Password (Please choose the same password on both servers): " password
+        arguments="--iran --lport:23-65535 --password:$password --sni:$sni --terminate:24"
+        
+        num_ips=0
+        while true; do
+            ((num_ips++))
+            read -p "Please enter ip server $num_ips (or type 'done' to finish): " ip
+
+            if [ "$ip" == "done" ]; then
+                break
+            else
+                arguments="$arguments --peer:$ip"
+            fi
+        done
+    else
+        echo "Invalid choice. Please enter '1' or '2'."
+        exit 1
+    fi
+
+    echo "Configured arguments: $arguments"
+}
+
+load-balancer() {
+    check_dependencies
+    check_lbinstalled
+    install_rtt
+    # Change directory to /etc/systemd/system
+    cd /etc/systemd/system
+    configure_arguments2
+    # Create a new service file named tunnel.service
+    cat <<EOL > lbtunnel.service
+[Unit]
+Description=my lbtunnel service
+
+[Service]
+User=root
+WorkingDirectory=/root
+ExecStart=/root/RTT $arguments
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+EOL
+
+    # Reload systemctl daemon and start the service
+    sudo systemctl daemon-reload
+    sudo systemctl start lbtunnel.service
+    sudo systemctl enable lbtunnel.service
+}
+
+lb_uninstall() {
+    # Check if the service is installed
+    if [ ! -f "/etc/systemd/system/lbtunnel.service" ]; then
+        echo "The Load-balancer is not installed."
+        return
+    fi
+
+    # Stop and disable the service
+    sudo systemctl stop lbtunnel.service
+    sudo systemctl disable lbtunnel.service
+
+    # Remove service file
+    sudo rm /etc/systemd/system/lbtunnel.service
+    sudo systemctl reset-failed
+    sudo rm RTT
+    sudo rm install.sh
+
+    echo "Uninstallation completed successfully."
+}
+
 # Function to handle uninstallation
 uninstall() {
     # Check if the service is installed
@@ -120,10 +219,14 @@ echo "Your IP is: ($myip) "
 echo ""
 echo " --------#- Reverse Tls Tunnel -#--------"
 echo "1) Install (Multiport)"
-echo "2) Uninstall"
-echo "3) Check Update"
+echo "2) Uninstall (Multiport)"
+echo " ----------------------------"
+echo "3) Install Load-balancer"
+echo "4) Uninstall Load-balancer"
+echo " ----------------------------"
+echo "5) Check Update"
 echo "0) Exit"
-echo " --------------$version---------------"
+echo " --------------$version--------------"
 read -p "Please choose: " choice
 
 case $choice in
@@ -133,7 +236,14 @@ case $choice in
     2)
         uninstall
         ;;
-    3) check_update
+    3)
+        load-balancer
+        ;;
+    4)
+        lb_uninstall
+       ;;
+    5) 
+        check_update
         ;;
     0)
         exit

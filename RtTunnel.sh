@@ -191,28 +191,22 @@ uninstall() {
     echo "Uninstallation completed successfully."
 }
 
-update_services() { 
-    if sudo systemctl is-active --quiet tunnel.service; then
-        echo "tunnel.service is active, stopping..."
-        sudo systemctl stop tunnel.service > /dev/null 2>&1
-    elif sudo systemctl is-active --quiet lbtunnel.service; then
-        echo "lbtunnel.service is active, stopping..."
-        sudo systemctl stop lbtunnel.service > /dev/null 2>&1
+check_update() {
+    # Get the current installed version of RTT
+    installed_version=$(./RTT -v 2>&1 | grep -o '"[0-9.]*"')
+    
+
+    # Fetch the latest version from GitHub releases
+    latest_version=$(curl -s https://api.github.com/repos/radkesvat/ReverseTlsTunnel/releases/latest | grep -o '"tag_name": "[^"]*"' | cut -d":" -f2 | sed 's/["V ]//g' | sed 's/^/"/;s/$/"/')
+
+    # Compare the installed version with the latest version
+    if [[ "$latest_version" > "$installed_version" ]]; then
+        echo "A new version is available, please reinstall: $latest_version (Installed: $installed_version)."
+    else
+        echo "You have the latest version ($installed_version)."
     fi
-
-    wget "https://raw.githubusercontent.com/radkesvat/ReverseTlsTunnel/master/install.sh" -O install.sh && chmod +x install.sh && bash install.sh 
-
-    # Start the previously active service
-    if sudo systemctl is-active --quiet tunnel.service; then
-        echo "Restarting tunnel.service..."
-        sudo systemctl start tunnel.service > /dev/null 2>&1
-    elif sudo systemctl is-active --quiet lbtunnel.service; then
-        echo "Restarting lbtunnel.service..."
-        sudo systemctl start lbtunnel.service > /dev/null 2>&1
-    fi
-
-    echo "Service updated and restarted successfully."
 }
+
 
 #ip & version
 myip=$(hostname -I | awk '{print $1}')
@@ -230,7 +224,7 @@ echo " ----------------------------"
 echo "3) Install Load-balancer"
 echo "4) Uninstall Load-balancer"
 echo " ----------------------------"
-echo "5) Update RTT"
+echo "5) Check Update"
 echo "0) Exit"
 echo " --------------$version--------------"
 read -p "Please choose: " choice
@@ -249,8 +243,8 @@ case $choice in
         lb_uninstall
        ;;
     5) 
-        update_services
-       ;;
+        check_update
+        ;;
     0)
         exit
         ;;

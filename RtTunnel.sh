@@ -230,7 +230,7 @@ echo " ----------------------------"
 echo "3) Install Load-balancer"
 echo "4) Uninstall Load-balancer"
 echo " ----------------------------"
-echo "5) Update"
+echo "5) Update RTT"
 echo "0) Exit"
 echo " --------------$version--------------"
 read -p "Please choose: " choice

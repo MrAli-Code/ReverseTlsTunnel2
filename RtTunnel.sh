@@ -227,8 +227,9 @@ update_services() {
     fi
 }
 
-#ip
+#ip & version
 myip=$(hostname -I | awk '{print $1}')
+version=$(./RTT -v 2>&1 | grep -o 'version="[0-9.]*"')
 
 # Main menu
 clear
@@ -244,7 +245,7 @@ echo "4) Uninstall Load-balancer"
 echo " ----------------------------"
 echo "5) Update RTT"
 echo "0) Exit"
-echo " --------------$installed_version--------------"
+echo " --------------$version--------------"
 read -p "Please choose: " choice
 
 case $choice in

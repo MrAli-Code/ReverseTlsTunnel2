@@ -56,6 +56,7 @@ install() {
 Description=my tunnel service
 
 [Service]
+Type=idle
 User=root
 WorkingDirectory=/root
 ExecStart=/root/RTT $arguments
@@ -135,6 +136,7 @@ load-balancer() {
 Description=my lbtunnel service
 
 [Service]
+Type=idle
 User=root
 WorkingDirectory=/root
 ExecStart=/root/RTT $arguments

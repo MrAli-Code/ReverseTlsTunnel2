@@ -6,6 +6,11 @@ check_dependencies() {
         echo "wget is not installed. Installing..."
         sudo apt-get install wget
     fi
+    
+    if ! command -v lsof &> /dev/null; then
+        echo "lsof is not installed. Installing..."
+        sudo apt-get install lsof
+    fi
 }
 
 #Check installed service

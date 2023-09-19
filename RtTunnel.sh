@@ -1,15 +1,44 @@
 #!/bin/bash
 
+root_access() {
+    # Check if the script is running as root
+    if [ "$EUID" -ne 0 ]; then
+        echo "This script requires root access. please run as root."
+        exit 1
+    fi
+}
+
 # Function to check if wget is installed, and install it if not
 check_dependencies() {
+    if [ -x "$(command -v apt-get)" ]; then
+        package_manager="apt-get"
+    elif [ -x "$(command -v yum)" ]; then
+        package_manager="yum"
+    elif [ -x "$(command -v dnf)" ]; then
+        package_manager="dnf"
+    else
+        echo "Unsupported package manager. Please install wget, lsof, and iptables manually."
+        exit 1
+    fi
+
     if ! command -v wget &> /dev/null; then
         echo "wget is not installed. Installing..."
-        sudo apt-get install wget
+        sudo $package_manager install wget -y
     fi
-    
+
     if ! command -v lsof &> /dev/null; then
         echo "lsof is not installed. Installing..."
-        sudo apt-get install lsof
+        sudo $package_manager install lsof -y
+    fi
+
+    if ! command -v iptables &> /dev/null; then
+        echo "iptables is not installed. Installing..."
+        sudo $package_manager install iptables -y
+    fi
+    
+    if ! command -v unzip &> /dev/null; then
+        echo "unzip is not installed. Installing..."
+        sudo $package_manager install unzip -y
     fi
 }
 
@@ -47,6 +76,7 @@ configure_arguments() {
 
 # Function to handle installation
 install() {
+    root_access
     check_dependencies
     check_installed
     install_rtt
@@ -129,6 +159,7 @@ configure_arguments2() {
 }
 
 load-balancer() {
+    root_access
     check_dependencies
     check_lbinstalled
     install_rtt

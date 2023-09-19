@@ -8,38 +8,37 @@ root_access() {
     fi
 }
 
-# Function to check if wget is installed, and install it if not
-check_dependencies() {
-    if [ -x "$(command -v apt-get)" ]; then
-        package_manager="apt-get"
-    elif [ -x "$(command -v yum)" ]; then
-        package_manager="yum"
-    elif [ -x "$(command -v dnf)" ]; then
-        package_manager="dnf"
+detect_distribution() {
+    # Detect the Linux distribution
+    local supported_distributions=("ubuntu" "debian" "centos" "fedora")
+    
+    if [ -f /etc/os-release ]; then
+        source /etc/os-release
+        if [[ "${ID}" = "ubuntu" || "${ID}" = "debian" || "${ID}" = "centos" || "${ID}" = "fedora" ]]; then
+            package_manager="apt-get"
+            [ "${ID}" = "centos" ] && package_manager="yum"
+            [ "${ID}" = "fedora" ] && package_manager="dnf"
+        else
+            echo "Unsupported distribution!"
+            exit 1
+        fi
     else
-        echo "Unsupported package manager. Please install wget, lsof, and iptables manually."
+        echo "Unsupported distribution!"
         exit 1
     fi
+}
 
-    if ! command -v wget &> /dev/null; then
-        echo "wget is not installed. Installing..."
-        sudo $package_manager install wget -y
-    fi
+check_dependencies() {
+    detect_distribution
 
-    if ! command -v lsof &> /dev/null; then
-        echo "lsof is not installed. Installing..."
-        sudo $package_manager install lsof -y
-    fi
-
-    if ! command -v iptables &> /dev/null; then
-        echo "iptables is not installed. Installing..."
-        sudo $package_manager install iptables -y
-    fi
+    local dependencies=("wget" "lsof" "iptables" "unzip" "gcc" "git" "curl" "tar")
     
-    if ! command -v unzip &> /dev/null; then
-        echo "unzip is not installed. Installing..."
-        sudo $package_manager install unzip -y
-    fi
+    for dep in "${dependencies[@]}"; do
+        if ! command -v "${dep}" &> /dev/null; then
+            echo "${dep} is not installed. Installing..."
+            sudo "${package_manager}" install "${dep}" -y
+        fi
+    done
 }
 
 #Check installed service
@@ -282,6 +281,7 @@ echo "3) Install Load-balancer"
 echo "4) Uninstall Load-balancer"
 echo " ----------------------------"
 echo "5) Update RTT"
+echo "6) Compile FTT"
 echo "0) Exit"
 echo " --------------$version--------------"
 read -p "Please choose: " choice
@@ -302,7 +302,10 @@ case $choice in
     5) 
         update_services
        ;;
-    0)
+    6)
+        compile
+        ;;
+    0)   
         exit
         ;;
     *)

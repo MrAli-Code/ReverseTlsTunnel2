@@ -334,7 +334,7 @@ echo "3) Install Load-balancer"
 echo "4) Uninstall Load-balancer"
 echo " ----------------------------"
 echo "5) Update RTT"
-echo "6) Compile FTT"
+echo "6) Compile RTT"
 echo "0) Exit"
 echo " --------------$version--------------"
 read -p "Please choose: " choice

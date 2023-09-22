@@ -56,7 +56,7 @@ install_rtt() {
 
 # Function to configure arguments based on user's choice
 configure_arguments() {
-    read -p "Which server do you want to use? (Enter '1' for Iran or '2' for Kharej) : " server_choice
+    read -p "Which server do you want to use? (Enter '1' for Iran(internal-server) or '2' for Kharej(external-server) ) : " server_choice
     read -p "Please Enter SNI (default : splus.ir): " sni
     sni=${sni:-splus.ir}
     read -p "Do you want to use mux? (yes/no): " use_mux
@@ -69,7 +69,7 @@ configure_arguments() {
     fi
 
     if [ "$server_choice" == "2" ]; then
-        read -p "Please Enter (IRAN IP) : " server_ip
+        read -p "Please Enter (IRAN IP(internal-server)) : " server_ip
         read -p "Please Enter Password (Please choose the same password on both servers): " password
         arguments="--kharej --iran-ip:$server_ip --iran-port:443 --toip:127.0.0.1 --toport:multiport --password:$password --sni:$sni --mux-width:$mux_width --terminate:24"
     elif [ "$server_choice" == "1" ]; then
@@ -130,7 +130,7 @@ check_lbinstalled() {
 
 # Function to configure arguments2 based on user's choice
 configure_arguments2() {
-    read -p "Which server do you want to use? (Enter '1' for Iran or '2' for Kharej) : " server_choice
+    read -p "Which server do you want to use? (Enter '1' for Iran(internal-server) or '2' for Kharej(external-server) ) : " server_choice
     read -p "Please Enter SNI (default : splus.ir): " sni
     sni=${sni:-splus.ir}
     read -p "Do you want to use mux? (yes/no): " use_mux
@@ -144,7 +144,7 @@ configure_arguments2() {
 
     if [ "$server_choice" == "2" ]; then
         read -p "Is this your main server (VPN server)? (yes/no): " is_main_server
-        read -p "Please Enter (IRAN IP) : " server_ip
+        read -p "Please Enter (IRAN IP(internal-server)) : " server_ip
         read -p "Please Enter Password (Please choose the same password on both servers): " password
 
         if [ "$is_main_server" == "yes" ]; then

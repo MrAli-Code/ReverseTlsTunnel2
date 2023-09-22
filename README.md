@@ -13,7 +13,7 @@
 - فایل RTT پس از کامپایل در مسیر ReverseTlsTunnel/dist ذخیره میشود.
 - -قابلیت Fake Upload برای سرور ایران اضافه شده.
 
-
+- توضیحات کامل در صفحه ی [Radkesvat](https://github.com/radkesvat/ReverseTlsTunnel/tree/master)
 
 ## Install 
 
